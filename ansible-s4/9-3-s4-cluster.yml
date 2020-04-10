@@ -1,0 +1,8 @@
+---
+- hosts: rhel8-node1
+  vars:
+    cluster_name: r8s4
+    cluster_nodes: rhel8-node1 rhel8-node2 rhel8-node3
+  tasks:
+  - name: Set up cluster
+    command: pcs cluster setup {{ cluster_name }} --start {{ cluster_nodes }}

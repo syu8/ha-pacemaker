@@ -1,0 +1,4 @@
+- name: /sapmnt Create mountable dir
+  file: path=/sapmnt state=directory mode=777 owner=root group=root
+- name: set mountpoints for /sapmnt
+  mount: name=/sapmnt src={{efsserver}}:/{{efsvolume}}/sapmnt fstype=nfs opts={{mountopts}} dump=0 passno=0 state=mounted

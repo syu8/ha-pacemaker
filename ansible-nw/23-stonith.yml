@@ -1,0 +1,2 @@
+- name: Create custom fence device
+  command: pcs stonith create {{ fence_name }} {{ fence_type }} {{ fence_options }}

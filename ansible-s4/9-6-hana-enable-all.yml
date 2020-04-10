@@ -1,0 +1,6 @@
+---
+- hosts: rhel8-hana1
+  tasks:
+  - name: pcs cluster enable --all
+    command: pcs cluster enable --all
+

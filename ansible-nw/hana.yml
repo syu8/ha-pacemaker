@@ -1,0 +1,32 @@
+---
+- hosts: nw-hana
+  vars:
+      efsserver: fs-f902d5b2.efs.us-east-1.amazonaws.com
+      efsvolume: rhel8-ha
+      SID: NW2
+      mountopts: vers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+
+  tasks:
+  - name: create cert on hana
+    import_tasks: 1-create-cert.yml
+  - name: hana update hostname
+    import_tasks: 2-update-hostname.yml
+  - name: hana update /etc/hosts
+    import_tasks: 3-update-hosts.yml
+  - name: rhsm subscription for hana
+    import_tasks: 4-rhsm-hana.yml 
+  - name: create swap for hana
+    import_tasks: 5-swap.yml
+  - name: change root passwd for hana
+    import_tasks: 7-root-passwd.yml
+  - name: install awscli hana
+    import_tasks: 8-awscli.yml
+  - name: mount /nwinstall for hana
+    import_tasks: 9-nwinstall.yml
+  - name: mount shared fs hana
+    import_tasks: 10-shared-fs-hana.yml
+
+- hosts: nw-hana
+  roles:
+  - role: sap-preconfigure
+  - role: sap-hana-preconfigure

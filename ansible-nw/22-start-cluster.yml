@@ -1,0 +1,9 @@
+- name: Start cluster services on all nodes
+  service:
+    name: "{{ item }}"
+    enabled: true
+    state: 'started'
+  with_items:
+    - pacemaker
+    - corosync
+

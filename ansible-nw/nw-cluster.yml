@@ -1,0 +1,108 @@
+---
+- hosts: nw-cluster-nodes
+  vars:
+      efsserver: fs-f902d5b2.efs.us-east-1.amazonaws.com
+      efsvolume: rhel8-ha
+      SID: NW2
+      mountopts: vers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+
+  tasks:
+  - name: prepare ascs/ers nodes
+    import_tasks: 1-create-cert.yml
+  - name: update hostname
+    import_tasks: 2-update-hostname.yml
+  - name: update /etc/hosts
+    import_tasks: 3-update-hosts.yml
+  - name: rhsm subscription
+    import_tasks: 4-rhsm-nw.yml
+  - name: create swap
+    import_tasks: 5-swap.yml
+  - name: change root passwd
+    import_tasks: 7-root-passwd.yml
+  - name: install awscli
+    import_tasks: 8-awscli.yml
+  - name: mount /nwinstall
+    import_tasks: 9-nwinstall.yml
+  - name: mount shared fs
+    import_tasks: 10-shared-fs-nw.yml
+
+- hosts: nw-cluster-nodes
+  roles:
+  - role: sap-preconfigure
+  - role: sap-netweaver-preconfigure
+
+- hosts: nw8-node1
+  vars:
+      efsserver: fs-f902d5b2.efs.us-east-1.amazonaws.com
+      efsvolume: rhel8-ha
+      SID: NW2
+      mountopts: vers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+
+  tasks:
+  - name: mount ASCS fs
+    import_tasks: 11-instance-fs.yml
+    vars:
+      ascsnum: 30
+      efsdir: ASCS{{ascsnum}}
+      mntdir: /usr/sap/{{SID}}/ASCS{{ascsnum}}
+
+- hosts: nw8-node2
+  vars:
+      efsserver: fs-f902d5b2.efs.us-east-1.amazonaws.com
+      efsvolume: rhel8-ha
+      SID: NW2
+      mountopts: vers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+
+  tasks:
+  - name: mount ERS fs
+    import_tasks: 11-instance-fs.yml
+    vars:
+      ersnum: 39
+      efsdir: ERS{{ersnum}}
+      mntdir: /usr/sap/{{SID}}/ERS{{ersnum}}
+
+- hosts: nw-cluster-nodes
+  vars:
+    pacemaker_packages:
+      - pcs
+      - pacemaker
+      - fence-agents-aws
+      - resource-agents-sap
+    hacluster_pwd: pass
+    private: yes
+    encrypt: "sha512_crypt"
+    confirm: yes
+    salt_size: 7
+
+  tasks:
+  - name: Install pacemaker cluster
+    import_tasks: 20-pcs.yml
+#  - name: Change hacluster Password
+#    user:
+#      name: hacluster
+#      password: "{{ hacluster_pwd | password_hash('sha512') }}"
+#      update_password: always
+
+- hosts: nw8-node1
+  vars:
+    cluster_name: nw8
+    cluster_nodes: nw8-node1 nw8-node2
+    fence_name: stonith-nw8
+    fence_type: fence_aws
+    fence_options: region=us-east-1  pcmk_host_map="nw8-node1:i-0b04a9994572af66e;nw8-node2:i-0b0144155855606dc" power_timeout=240 pcmk_reboot_timeout=480 pcmk_reboot_retries=4
+
+  tasks:
+#  - name: Authenticate hacluster
+#    command: pcs host auth -u hacluster -p pass {{cluster_nodes}}
+
+  - name: Setup cluster
+    command: pcs cluster setup {{ cluster_name }} --start {{ cluster_nodes }}
+
+  - name: Start cluster
+    import_tasks: 22-start-cluster.yml
+
+  - name: Create custom fence device
+    command: pcs stonith create {{ fence_name }} {{ fence_type }} {{ fence_options }}
+
+  - name: Enable all on cluster
+    import_tasks: 24-enable-all.yml

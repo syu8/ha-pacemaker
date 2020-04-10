@@ -1,0 +1,24 @@
+- name: Install nfs-utils rpms
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - nfs-utils
+
+- name: Create mountable dir for nwinstall
+  file: path=/{{mntdir}} state=directory mode=777 owner=root group=root
+  vars:
+    efsserver: fs-f902d5b2.efs.us-east-1.amazonaws.com
+    efsvolume: RHEL-NW-HA-750
+    mntdir: nwinstall
+    mountopts: vers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+
+- name: Set mountpoint for nwinstall
+  mount: name=/{{mntdir}} src={{efsserver}}:/{{efsvolume}}/{{mntdir}} fstype=nfs opts={{mountopts}} dump=0 passno=0 state=mounted
+  vars:
+    efsserver: fs-f902d5b2.efs.us-east-1.amazonaws.com
+    efsvolume: RHEL-NW-HA-750
+    mntdir: nwinstall
+    mountopts: vers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+
+

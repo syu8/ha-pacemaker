@@ -1,0 +1,14 @@
+- name: /sapmnt Create mountable dir
+  file: path=/sapmnt state=directory mode=777 owner=root group=root
+- name: set mountpoints for /sapmnt
+  mount: name=/sapmnt src={{efsserver}}:/{{efsvolume}}/sapmnt fstype=nfs opts={{mountopts}} dump=0 passno=0 state=mounted
+
+- name: /usr/sap/trans Create mountable dir
+  file: path=/usr/sap/trans state=directory mode=777 owner=root group=root
+- name: set mountpoints for /usr/sap/trans
+  mount: name=/usr/sap/trans src={{efsserver}}:/{{efsvolume}}/trans fstype=nfs opts={{mountopts}} dump=0 passno=0 state=mounted
+
+- name: /usr/sap/SID/SYS Create mountable dir
+  file: path=/usr/sap/{{SID}}/SYS state=directory mode=777 owner=root group=root
+- name: set mountpoints for /usr/sap/SID/SYS
+  mount: name=/usr/sap/{{SID}}/SYS src={{efsserver}}:/{{efsvolume}}/{{SID}}/SYS fstype=nfs opts={{mountopts}} dump=0 passno=0 state=mounted

@@ -1,0 +1,12 @@
+---
+- hosts: s4-hana-nodes
+  vars:
+    pacemaker_packages: 
+      - resource-agents-sap-hana-4.1.1
+
+  tasks:
+  - name: Install Pacemaker cluster packages to all nodes
+    yum:
+      name: "{{ pacemaker_packages }}"
+      state: installed
+

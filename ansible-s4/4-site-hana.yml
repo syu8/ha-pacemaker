@@ -1,0 +1,5 @@
+---
+- hosts: rhel8-hana3
+  roles:
+  - role: sap-preconfigure
+  - role: sap-hana-preconfigure

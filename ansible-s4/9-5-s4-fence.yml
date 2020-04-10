@@ -1,0 +1,12 @@
+---
+- hosts: rhel8-node1
+  vars:
+    fence_name: stonith-r8s4
+    fence_type: fence_aws
+# look up the aws ec2 hostid:
+# echo $(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+# make sure to add hosts to sap-STONITH role in AWS EC2
+    fence_options: region=us-east-1  pcmk_host_map="rhel8-node1:i-;rhel8-node2:i-;rhel8-node3:i-" power_timeout=240 pcmk_reboot_timeout=480 pcmk_reboot_retries=4    
+  tasks:
+  - name: Create custom fence device
+    command: pcs stonith create {{ fence_name }} {{ fence_type }} {{ fence_options }}

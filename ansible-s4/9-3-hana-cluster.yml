@@ -1,0 +1,9 @@
+---
+- hosts: rhel8-hana1
+  vars:
+    cluster_name: r8hana
+    cluster_nodes: rhel8-hana1 rhel8-hana2
+  tasks:
+  - name: Set up cluster
+    command: pcs cluster setup {{ cluster_name }} --start {{ cluster_nodes }}
+

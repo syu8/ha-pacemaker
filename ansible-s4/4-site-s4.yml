@@ -1,0 +1,5 @@
+---
+- hosts: s4-as-nodes
+  roles:
+  - role: sap-preconfigure
+  - role: sap-netweaver-preconfigure

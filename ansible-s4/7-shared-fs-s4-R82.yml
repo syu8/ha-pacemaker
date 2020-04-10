@@ -1,0 +1,22 @@
+---
+- hosts: s4-cluster-nodes s4-as-nodes
+  vars:
+    efsserver: fs-f902d5b2.efs.us-east-1.amazonaws.com
+    efsvolume: rhel8-ha
+    SID: R82
+    mountopts: vers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport 
+  tasks:
+    - name: /sapmnt Create mountable dir
+      file: path=/sapmnt state=directory mode=777 owner=root group=root
+    - name: set mountpoints
+      mount: name=/sapmnt src={{efsserver}}:/{{efsvolume}}/sapmnt fstype=nfs opts={{mountopts}} dump=0 passno=0 state=mounted
+
+    - name: /usr/sap/trans Create mountable dir
+      file: path=/usr/sap/trans state=directory mode=777 owner=root group=root
+    - name: set mountpoints
+      mount: name=/usr/sap/trans src={{efsserver}}:/{{efsvolume}}/trans fstype=nfs opts={{mountopts}} dump=0 passno=0 state=mounted
+
+    - name: /usr/sap/SID/SYS Create mountable dir
+      file: path=/usr/sap/{{SID}}/SYS state=directory mode=777 owner=root group=root
+    - name: set mountpoints
+      mount: name=/usr/sap/{{SID}}/SYS src={{efsserver}}:/{{efsvolume}}/{{SID}}/SYS fstype=nfs opts={{mountopts}} dump=0 passno=0 state=mounted

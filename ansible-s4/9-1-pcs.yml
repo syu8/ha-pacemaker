@@ -1,0 +1,31 @@
+---
+- hosts: s4-hana-nodes
+  vars:
+    pacemaker_packages: 
+      - pcs
+      - pacemaker
+      - fence-agents-aws
+      - resource-agents-sap-hana
+    hacluster_pwd: pass
+    private: yes
+    encrypt: "sha512_crypt"
+    confirm: yes
+    salt_size: 7
+
+  tasks:
+  - name: Install Pacemaker cluster packages to all nodes
+    yum:
+      name: "{{ pacemaker_packages }}"
+      state: latest
+
+  - name: Change hacluster user password
+    user:
+      name: hacluster
+      password: "{{ hacluster_pwd | password_hash('sha512') }}"
+      update_password: always
+
+  - name: Enable and start PCSD service
+    service:
+      name: 'pcsd'
+      enabled: true
+      state: 'started'

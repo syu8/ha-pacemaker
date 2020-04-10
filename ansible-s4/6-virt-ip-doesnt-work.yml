@@ -1,0 +1,7 @@
+---
+# this playbook doesn't work yet
+- name: Add Virt IP on node1 and node2
+  hosts: rhel8-node1
+  tasks:
+    - name: Configure IP address on node1
+      ipadm_addr: addr=192.168.200.204/32 addrobj=eth0 state=present temporary=true

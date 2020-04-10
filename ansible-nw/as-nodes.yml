@@ -1,0 +1,62 @@
+---
+- hosts: nw-as-nodes
+  vars:
+      efsserver: fs-f902d5b2.efs.us-east-1.amazonaws.com
+      efsvolume: rhel8-ha
+      SID: NW2
+      mountopts: vers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+
+  tasks:
+  - name: prepare app server nodes
+    import_tasks: 1-create-cert.yml
+  - name: update hostname
+    import_tasks: 2-update-hostname.yml
+  - name: update /etc/hosts
+    import_tasks: 3-update-hosts.yml
+  - name: rhsm subscription
+    import_tasks: 4-rhsm-nw.yml 
+  - name: create swap
+    import_tasks: 5-swap.yml
+  - name: change root passwd
+    import_tasks: 7-root-passwd.yml
+  - name: install awscli
+    import_tasks: 8-awscli.yml
+  - name: mount /nwinstall
+    import_tasks: 9-nwinstall.yml
+  - name: mount shared fs
+    import_tasks: 10-shared-fs-nw.yml
+
+- hosts: nw-as-nodes
+  roles:
+  - role: sap-preconfigure
+  - role: sap-netweaver-preconfigure
+
+- hosts: nw8-node4
+  vars:
+      efsserver: fs-f902d5b2.efs.us-east-1.amazonaws.com
+      efsvolume: rhel8-ha
+      SID: NW2
+      mountopts: vers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+
+  tasks:
+  - name: mount D31 fs
+    import_tasks: 11-instance-fs.yml
+    vars:
+      num: 31
+      efsdir: D{{num}}
+      mntdir: /usr/sap/{{SID}}/D{{num}}
+
+- hosts: nw8-node5
+  vars:
+      efsserver: fs-f902d5b2.efs.us-east-1.amazonaws.com
+      efsvolume: rhel8-ha
+      SID: NW2
+      mountopts: vers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+
+  tasks:
+  - name: mount D32 fs
+    import_tasks: 11-instance-fs.yml
+    vars:
+      num: 32
+      efsdir: D{{num}}
+      mntdir: /usr/sap/{{SID}}/D{{num}}

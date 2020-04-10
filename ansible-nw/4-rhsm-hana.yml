@@ -1,0 +1,10 @@
+- name: Subscribe to a specific pool by ID.
+  redhat_subscription:
+    state: present
+    username: 
+    password: 
+    pool_ids: 
+
+- name: Enable repositories for HANA
+  rhsm_repository:
+    name: rhel-8-for-x86_64-baseos-rpms,rhel-8-for-x86_64-sap-solutions-rpms,rhel-8-for-x86_64-highavailability-rpms

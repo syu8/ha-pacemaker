@@ -1,0 +1,22 @@
+- name: Install Pacemaker cluster packages to all nodes
+  yum:
+    name: "{{ pacemaker_packages }}"
+    state: latest
+
+- name: Change hacluster user password
+  user:
+    name: hacluster
+    password: "{{ hacluster_pwd | password_hash('sha512') }}"
+    update_password: always
+  vars:
+    hacluster_pwd: haclusterpass
+    private: yes
+    encrypt: "sha512_crypt"
+    confirm: yes
+    salt_size: 7
+
+- name: Enable and start PCSD service
+  service:
+    name: 'pcsd'
+    enabled: true
+    state: 'started'

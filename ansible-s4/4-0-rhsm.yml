@@ -1,0 +1,27 @@
+---
+- hosts: all
+  tasks:
+    - name: Same as above but subscribe to a specific pool by ID.
+      redhat_subscription:
+        state: present
+        username: 
+        password: 
+        pool_ids: 
+
+- hosts: s4-cluster-nodes
+  tasks:
+  - name: Enable a RHSM repository
+    rhsm_repository:
+      name: rhel-8-for-x86_64-baseos-rpms,rhel-8-for-x86_64-sap-netweaver-rpms,rhel-8-for-x86_64-highavailability-rpms
+
+- hosts: s4-as-nodes
+  tasks:
+  - name: Enable a RHSM repository
+    rhsm_repository:
+      name: rhel-8-for-x86_64-baseos-rpms,rhel-8-for-x86_64-sap-netweaver-rpms
+
+- hosts: s4-hana-nodes
+  tasks:
+  - name: Enable a RHSM repository
+    rhsm_repository:
+      name: rhel-8-for-x86_64-baseos-rpms,rhel-8-for-x86_64-sap-solutions-rpms,rhel-8-for-x86_64-highavailability-rpms

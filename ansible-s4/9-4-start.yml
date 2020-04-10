@@ -1,0 +1,12 @@
+---
+- hosts: s4-cluster-nodes
+  tasks:
+  - name: Start cluster services on all nodes
+    service:
+      name: "{{ item }}"
+      enabled: true
+      state: 'started'
+    with_items:
+      - pacemaker
+      - corosync
+

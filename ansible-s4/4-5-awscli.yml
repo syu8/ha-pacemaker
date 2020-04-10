@@ -1,0 +1,24 @@
+---
+- hosts: s4-as-nodes
+  tasks:
+  - name: Install AWS command line interface
+    yum:
+      name: awscli
+      state: latest
+
+  - name: Create .aws directory in the home directory
+    file:
+      path: "/root/.aws/"
+      state: directory
+      owner: "{{ansible_ssh_user}}"
+      group: "{{ansible_ssh_user}}"
+      mode: 0755
+
+  - name: Copy the aws config file to the box
+    template:
+      src: aws_config.j2
+      dest: "/root/.aws/config"
+      owner: "{{ansible_ssh_user}}"
+      group: "{{ansible_ssh_user}}"
+      mode: 0600
+

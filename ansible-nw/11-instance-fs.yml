@@ -1,0 +1,9 @@
+- name: Create mountable instance dir
+  file: path={{mntdir}} state=directory mode=777 owner=root group=root
+- name: set mountpoints for instance
+  mount: name={{mntdir}} src={{efsserver}}:/{{efsvolume}}/{{SID}}/{{efsdir}} fstype=nfs opts={{mountopts}} dump=0 passno=0 state=mounted
+- name: remove fstab entry
+  lineinfile: 
+    path: /etc/fstab
+    state: absent
+    regexp: '^{{efsserver}}:/{{efsvolume}}/{{SID}}/{{efsdir}}\s'

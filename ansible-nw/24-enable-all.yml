@@ -1,0 +1,3 @@
+- name: pcs cluster enable --all
+  command: pcs cluster enable --all
+

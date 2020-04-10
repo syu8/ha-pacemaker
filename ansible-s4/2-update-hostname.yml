@@ -1,0 +1,13 @@
+---
+- hosts: s4-as-nodes
+  tasks:
+  - name: change hostname
+    hostname:
+      name: '{{ inventory_hostname }}'
+
+  - name: update cloud.cfg 
+    lineinfile:
+      path: /etc/cloud/cloud.cfg
+      line: 'preserve_hostname: true'
+      insertbefore: BOF
+

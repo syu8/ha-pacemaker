@@ -1,0 +1,32 @@
+---
+- name: update /etc/hosts
+  hosts: s4-as-nodes
+  tasks:
+#    - name: Insert a ip/hostname line
+#      lineinfile:
+#        path: /etc/hosts
+#        regexp: '^{{ ansible_default_ipv4.address }}\s'
+#        line: '{{ ansible_default_ipv4.address }} {{ ansible_hostname }}'
+    - name: remove a ip/hostname line
+      lineinfile:
+        path: /etc/hosts
+        state: absent
+        regexp: '^{{ ansible_default_ipv4.address }}\s'
+    - name: add ip/hostname block
+      blockinfile:
+        path: /etc/hosts
+        create: yes
+        block: |
+          # RHEL 8 HA-Interface Certs 
+          10.0.1.197	rhel8-ansible
+          10.0.1.55	rhel8-node1
+          10.0.3.106	rhel8-node2
+          10.0.4.216	rhel8-node3
+          10.0.3.179	rhel8-node4
+          10.0.1.229	rhel8-node5
+          10.0.1.67	rhel8-hana1
+          10.0.3.137	rhel8-hana2
+          10.0.3.169	rhel8-hana3
+          192.168.200.204	r8s4ascs
+          192.168.200.205	r8s4ers
+          192.168.200.206	r8s4db

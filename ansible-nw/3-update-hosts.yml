@@ -1,0 +1,23 @@
+- name: remove a ip/hostname line
+  lineinfile:
+    path: /etc/hosts
+    state: absent
+    regexp: '^{{ ansible_default_ipv4.address }}\s'
+- name: add ip/hostname block
+  blockinfile:
+    path: /etc/hosts
+    create: yes
+    block: |
+      # RHEL 8 HA-Interface Certs 
+      10.0.0.120	nw8-hana1
+      10.0.0.138	nw8-node1
+      10.0.0.95	nw8-node2
+      10.0.0.41	nw8-node4
+      10.0.0.169	nw8-node5
+      54.87.64.66	nw8-hana1-p
+      34.202.50.63	nw8-node1-p
+      52.3.194.201	nw8-node2-p
+      52.70.193.1	nw8-node4-p
+      52.23.79.62	nw8-node5-p
+      192.168.200.111	nw8ascs
+      192.168.200.112	nw8ers
